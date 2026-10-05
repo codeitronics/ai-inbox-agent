@@ -25,7 +25,9 @@ def main() -> None:
     if args.cmd == "serve":
         import uvicorn
 
-        uvicorn.run("inbox_agent.web.app:app", host=args.host, port=args.port)
+        # Trust X-Forwarded-Proto/For from the reverse proxy so redirects keep https. The port is only published
+        # on 127.0.0.1 (compose.yaml) or reached through the proxy network, so nothing else can spoof these headers.
+        uvicorn.run("inbox_agent.web.app:app", host=args.host, port=args.port, proxy_headers=True, forwarded_allow_ips="*")
         return
 
     from .pipeline import InboxAgent
