@@ -15,8 +15,15 @@ services:
       traefik.http.routers.inbox-demo.rule: Host(`demos.codeitronics.com`) && PathPrefix(`/inbox`)
       traefik.http.routers.inbox-demo.entrypoints: websecure
       traefik.http.routers.inbox-demo.tls.certresolver: mytlschallenge
-      traefik.http.routers.inbox-demo.middlewares: inbox-demo-strip
-      traefik.http.middlewares.inbox-demo-strip.stripprefix.prefixes: /inbox
+      # No strip-prefix: the app gets the full /inbox/... path and removes ROOT_PATH itself.
+      # The bare subdomain sends visitors to the products page.
+      traefik.http.routers.demos-root.rule: Host(`demos.codeitronics.com`) && Path(`/`)
+      traefik.http.routers.demos-root.entrypoints: websecure
+      traefik.http.routers.demos-root.tls.certresolver: mytlschallenge
+      traefik.http.routers.demos-root.middlewares: demos-root-redirect
+      traefik.http.routers.demos-root.service: noop@internal
+      traefik.http.middlewares.demos-root-redirect.redirectregex.regex: ^.*$
+      traefik.http.middlewares.demos-root-redirect.redirectregex.replacement: https://codeitronics.com/products
       traefik.http.services.inbox-demo.loadbalancer.server.port: "8000"
 
 networks:

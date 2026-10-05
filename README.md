@@ -106,7 +106,7 @@ uv run pytest                                            # tests
 docker compose up -d --build    # listens on 127.0.0.1:8010
 ```
 
-It's set up to be served at a path, `https://demos.codeitronics.com/inbox`, with `ROOT_PATH=/inbox`. Behind Traefik, add [`deploy/compose.traefik.yaml`](deploy/compose.traefik.yaml) (`docker compose -f compose.yaml -f deploy/compose.traefik.yaml up -d --build`); behind any other proxy, strip the `/inbox` prefix and forward to port 8010.
+It's set up to be served at a path, `https://demos.codeitronics.com/inbox`, with `ROOT_PATH=/inbox`. Behind Traefik, add [`deploy/compose.traefik.yaml`](deploy/compose.traefik.yaml) (`docker compose -f compose.yaml -f deploy/compose.traefik.yaml up -d --build`); behind any other proxy, forward `/inbox` (without stripping the prefix) to port 8010.
 
 ## How it's built
 
