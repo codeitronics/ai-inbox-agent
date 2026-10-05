@@ -1,0 +1,13 @@
+{% macro tags(e) -%}
+  {% if e.priority %}<span class="pri pri-{{ e.priority }}">{{ e.priority }}</span>{% endif %}
+  {% if e.category %}<span class="tag">{{ e.category }}</span>{% endif %}
+{%- endmacro %}
+
+{% macro status(e) -%}
+  {% if e.status == 'new' %}<span class="st st-new">Not triaged</span>
+  {% elif e.status == 'awaiting_approval' %}<span class="st st-wait">Reply ready</span>
+  {% elif e.status == 'sent' %}<span class="st st-done">Replied</span>
+  {% elif e.status == 'skipped' %}<span class="st">Skipped</span>
+  {% elif e.category == 'spam' %}<span class="st st-warn">Flagged</span>
+  {% else %}<span class="st">FYI</span>{% endif %}
+{%- endmacro %}

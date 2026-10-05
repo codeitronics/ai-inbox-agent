@@ -60,3 +60,6 @@ htmlcov/
 .dmypy.json
 dmypy.json
 credentials*.json
+
+# uv
+.venv/

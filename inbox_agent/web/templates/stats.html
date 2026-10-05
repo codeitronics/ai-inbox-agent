@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Stats{% endblock %}
+{% block main %}
+<div class="head"><div><p class="kicker">Stats</p><h1>What the agent has done</h1></div></div>
+<div class="figures">
+  <div><span class="fig">{{ s.triaged }}</span><span>emails triaged</span></div>
+  <div><span class="fig">{{ s.drafted }}</span><span>replies drafted</span></div>
+  <div><span class="fig">{{ s.approval_rate if s.approval_rate is not none else '—' }}{% if s.approval_rate is not none %}%{% endif %}</span><span>of decided drafts approved</span></div>
+  <div><span class="fig">~{{ s.minutes_saved }}</span><span>minutes saved (estimate*)</span></div>
+</div>
+<div class="split">
+  <section class="block">
+    <h2>By category</h2>
+    <table class="bars">
+      {% for cat, n in s.by_category %}
+      <tr><td>{{ cat }}</td><td class="bar"><span style="width: {{ (100 * n / top)|round|int }}%"></span></td><td>{{ n }}</td></tr>
+      {% endfor %}
+    </table>
+  </section>
+  <section class="block">
+    <h2>Details</h2>
+    <dl class="dl">
+      <dt>Replies sent</dt><dd>{{ s.sent }}</dd>
+      <dt>Past replies in memory</dt><dd>{{ s.memory }}</dd>
+      {% if s.provider != 'recorded' %}<dt>Average triage time</dt><dd>{{ s.avg_ms if s.avg_ms is not none else '—' }} ms</dd>{% endif %}
+      <dt>Model</dt><dd>{{ s.provider }} · {{ s.model }}</dd>
+    </dl>
+  </section>
+</div>
+<p class="note small">* {{ settings.minutes_saved_triage }} min per triaged email plus {{ settings.minutes_saved_reply }} min per approved reply. Change MINUTES_SAVED_* in .env to match your own timing.</p>
+{% endblock %}

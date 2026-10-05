@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Follow-ups{% endblock %}
+{% block main %}
+<div class="head"><div><p class="kicker">Follow-ups</p><h1>{{ f.due|length }} due now</h1></div></div>
+{% for label, rows in [('Due', f.due), ('Coming up', f.upcoming), ('Recently done', f.done)] %}
+<section class="block">
+  <h2>{{ label }}</h2>
+  {% if rows %}
+  <table class="table">
+    {% for r in rows %}
+    <tr>
+      <td><span class="pri pri-{{ r.priority }}">{{ r.priority }}</span></td>
+      <td><a href="/email/{{ r.email_id }}"><strong>{{ r.subject }}</strong></a><br><span class="muted">{{ r.sender|name }} · {{ r.summary }}</span></td>
+      <td class="nowrap">{% if r.status == 'done' %}done {{ r.completed_at|ago }}{% else %}due {{ r.due_at|ago }}{% endif %}</td>
+      <td class="nowrap">
+        {% if r.status != 'done' %}
+        <form method="post" action="/followups/{{ r.email_id }}/done" class="inline"><button class="btn btn-small">Done</button></form>
+        <form method="post" action="/followups/{{ r.email_id }}/snooze" class="inline"><button class="btn btn-small">Snooze 2d</button></form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted">None.</p>{% endif %}
+</section>
+{% endfor %}
+{% endblock %}

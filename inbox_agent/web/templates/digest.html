@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Digest{% endblock %}
+{% block main %}
+<article class="digest">
+  <p class="kicker">Morning digest · {{ d.date }}</p>
+  <h1>{{ d.high|length }} thing{{ 's' if d.high|length != 1 }} need{{ '' if d.high|length != 1 else 's' }} you first.</h1>
+  <p class="lead">{{ d.awaiting|length }} repl{{ 'y is' if d.awaiting|length == 1 else 'ies are' }} drafted and waiting for approval, {{ d.followups_due|length }} follow-up{{ 's' if d.followups_due|length != 1 }} {{ 'is' if d.followups_due|length == 1 else 'are' }} due{% if d.filtered %}, and {{ d.filtered.values()|sum }} promotional or suspicious email{{ 's were' if d.filtered.values()|sum != 1 else ' was' }} filtered out{% endif %}.{% if d.untriaged %} {{ d.untriaged }} new email{{ 's' if d.untriaged != 1 }} still to triage.{% endif %}</p>
+
+  <h2>Act on first</h2>
+  <ol class="digest-list">
+    {% for e in d.high %}
+    <li><a href="/email/{{ e.id }}"><strong>{{ e.subject }}</strong></a> — {{ e.sender|name }}<br>{{ e.summary }}{% if e.action_items %}<br><em>{{ e.action_items[0] }}</em>{% endif %}</li>
+    {% else %}<li class="muted">Nothing high priority.</li>{% endfor %}
+  </ol>
+
+  <h2>Replies waiting for you</h2>
+  <ol class="digest-list">
+    {% for e in d.awaiting %}<li><a href="/email/{{ e.id }}">{{ e.subject }}</a> — {{ e.sender|name }}</li>{% else %}<li class="muted">None.</li>{% endfor %}
+  </ol>
+
+  <h2>Follow-ups due</h2>
+  <ol class="digest-list">
+    {% for f in d.followups_due %}<li><a href="/email/{{ f.email_id }}">{{ f.subject }}</a> — {{ f.sender|name }}</li>{% else %}<li class="muted">None.</li>{% endfor %}
+  </ol>
+
+  <h2>For your information</h2>
+  <ol class="digest-list">
+    {% for e in d.fyi %}<li><a href="/email/{{ e.id }}">{{ e.subject }}</a> — {{ e.summary }}</li>{% else %}<li class="muted">Nothing else.</li>{% endfor %}
+  </ol>
+</article>
+{% endblock %}

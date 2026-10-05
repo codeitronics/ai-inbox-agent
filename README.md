@@ -1,329 +1,108 @@
-# AI Inbox Automation Agent Suite
+# AI Inbox Agent
 
-An intelligent multi-agent system that automates email management using AI-powered classification, summarization, and reply generation with RAG (Retrieval-Augmented Generation).
+An AI agent that works through an inbox the way a good assistant would. It sorts every email by category and priority, summarises it with the action items pulled out, drafts a reply in your voice based on how you answered similar emails before, and **waits for you to approve, edit or skip before anything is sent**.
 
-## Key Features
+![Inbox: replies ready for review, sorted by priority](docs/screenshots/01-inbox.png)
 
-- **Auto-drafting replies based on context**: AI-powered reply generation using past email patterns
-- **Sentiment analysis for priority sorting**: Intelligent classification and prioritization
-- **Daily digest summaries**: Concise summaries with action items
-- **One-click approval workflow**: Quick review and send interface
-- **RAG-powered responses**: Learn from past email interactions
-- **Follow-up scheduling**: Never miss important emails
-- **Google Sheets logging**: Track all email activities
-
-## System Architecture
-
-```
-Gmail Inbox
-    ↓
-Fetcher Agent (Gmail API)
-    ↓
-Classifier Agent (Category + Priority)
-    ↓
-Summarizer Agent (Key Points + Actions)
-    ↓
-Reply Draft Agent (RAG-based)
-    ↓
-Human Approval Interface
-    ↓
-Send Reply + Log
-    ↓
-Google Sheets / Vector Store
-```
-
-## Key Results & Impact
-
-- **80%** reduction in daily email handling time
-- **0** missed follow-ups
-- **92%** accuracy for drafts
-- **5-10s** time to generate replies
-
-## Installation
-
-### Prerequisites
-
-- Python 3.9+
-- Gmail account with API access
-- Google Cloud Project with Gmail API enabled
-- (Optional) OpenAI or Anthropic API key
-
-### Setup Steps
-
-1. **Clone the repository**
-```bash
-cd ai-inbox-automation
-```
-
-2. **Install dependencies**
-```bash
-pip install -r requirements.txt
-```
-
-3. **Set up Gmail API**
-   - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project
-   - Enable Gmail API
-   - Create OAuth 2.0 credentials (Desktop app)
-   - Download credentials as `credentials.json`
-   - Place `credentials.json` in the project root
-
-4. **Configure environment variables**
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and add your API keys:
-```bash
-# Choose AI provider
-AI_PROVIDER=anthropic  # or openai
-
-# Add your API key
-ANTHROPIC_API_KEY=your_key_here
-# OR
-OPENAI_API_KEY=your_key_here
-
-# Optional: Google Sheets ID for logging
-GOOGLE_SHEETS_ID=your_sheets_id_here
-```
-
-5. **Create data directory**
-```bash
-mkdir -p data logs
-```
-
-## Usage
-
-### Running the System
+**Try it without any setup:** the demo runs a fictional operations inbox (Northwind Logistics) with recorded AI answers. No Google account, no API key.
 
 ```bash
-python main.py
+uv sync
+uv run inbox-agent serve        # open http://127.0.0.1:8000
 ```
 
-### Interactive Menu
+## What it does
 
-When you run the system, you'll see:
+| Step | What happens |
+|---|---|
+| **Fetch** | Pulls unread mail from Gmail (or the demo mailbox) into a local SQLite database. |
+| **Classify** | Category (urgent, important, general, newsletter, promotional, spam) and priority (high, medium, low), with a confidence score and a one-line reason. Phishing is flagged, not answered. |
+| **Summarise** | One or two sentences, key points, action items with deadlines, and sentiment. |
+| **Draft** | For emails your rules say need an answer, it finds your most similar past replies and drafts a response in the same tone, citing which ones it used. |
+| **Approve** | You approve and send, edit the text, ask for a rewrite in plain words ("shorter, and confirm we'll cover the cost"), or skip. With approval on (the default), nothing is sent without you. |
+| **Remember** | Every approved reply becomes an example for future drafts, so drafts get closer to how you write. |
+| **Follow up** | High-priority mail gets a next-day follow-up and medium-priority mail one after a few days (configurable), with Done and Snooze. |
+| **Digest** | A morning page with what to act on first, replies waiting, follow-ups due, and what was filtered out. |
 
-```
-AI INBOX AUTOMATION AGENT SUITE
-================================================================================
+<table>
+  <tr>
+    <td><img src="docs/screenshots/02-email-draft.png" alt="Email with summary, action items and a drafted reply"></td>
+    <td><img src="docs/screenshots/04-digest.png" alt="Morning digest"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/03-phishing-flagged.png" alt="A phishing email flagged and not answered"></td>
+    <td><img src="docs/screenshots/06-stats.png" alt="Stats"></td>
+  </tr>
+</table>
 
-Options:
-  [1] Process emails once
-  [2] Run continuous automation
-  [3] Check follow-ups
-  [4] Display statistics
-  [5] Exit
-```
+## Run it on your own Gmail
 
-### Processing Flow
+1. Create a Google Cloud project, enable the Gmail API, create an OAuth client of type *Desktop app*, and save it as `credentials.json` in this folder.
+2. Install with Gmail support and configure:
+   ```bash
+   uv sync --extra gmail
+   cp .env.example .env
+   # set DEMO_MODE=false, WEB_PASSWORD, OWNER_NAME, OWNER_SIGNATURE and one AI provider key
+   ```
+3. Start it. The first run opens a browser window to authorise Gmail and stores `token.json` locally.
+   ```bash
+   uv run inbox-agent serve    # web UI (asks for WEB_PASSWORD)
+   uv run inbox-agent run      # or: fetch and triage every POLL_INTERVAL_SECONDS
+   ```
 
-1. **Fetch emails**: Retrieves unread emails from Gmail
-2. **Classify**: Categorizes (urgent, important, promotional, etc.) and prioritizes (high, medium, low)
-3. **Summarize**: Extracts key points, action items, and sentiment
-4. **Draft reply**: Generates context-aware response using RAG
-5. **Human approval**: Review and approve/edit/skip
-6. **Send & log**: Sends reply and logs to Google Sheets
-7. **Follow-up**: Schedules reminders for important emails
+Your mail, drafts and reply history stay in `data/inbox.db` on your machine. The only data that leaves it is what is sent to the AI provider you choose.
 
-### Approval Workflow
+### AI providers
 
-When a draft is generated, you can:
-- **[1] Approve and send**: Send the draft as-is
-- **[2] Edit with feedback**: Provide feedback to refine the draft
-- **[3] Skip**: Don't send a reply
+Set one key and leave `AI_PROVIDER=auto`, or pick explicitly:
 
-## Configuration
+| Provider | Key | Default model (override with `AI_MODEL`) |
+|---|---|---|
+| Anthropic | `ANTHROPIC_API_KEY` | `claude-sonnet-5-5` |
+| OpenAI | `OPENAI_API_KEY` | `gpt-5-mini` |
+| Google Gemini | `GEMINI_API_KEY` | `gemini-2.5-flash` |
+| DeepSeek | `DEEPSEEK_API_KEY` | `deepseek-chat` |
+| Recorded | none | replays `inbox_agent/demo/recordings.json` |
 
-Key settings in `.env`:
+### Rules
 
-| Setting | Description | Default |
-|---------|-------------|---------|
-| `EMAIL_CHECK_INTERVAL` | Seconds between email checks | 300 |
-| `MAX_EMAILS_PER_RUN` | Max emails processed per cycle | 50 |
-| `REPLY_APPROVAL_REQUIRED` | Require human approval | true |
-| `PRIORITY_HIGH_THRESHOLD` | Confidence threshold for high priority | 0.7 |
-| `FOLLOW_UP_DAYS` | Days until follow-up reminder | 3 |
-| `EMBEDDING_MODEL` | Model for vector embeddings | all-MiniLM-L6-v2 |
+Edit these on the Settings page: whether approval is required, which categories get drafts, the minimum priority for a draft, and the follow-up delay.
 
-## Project Structure
+## Commands
 
-```
-ai-inbox-automation/
-├── agents/
-│   ├── fetcher.py           # Gmail API integration
-│   ├── classifier.py        # Email categorization & prioritization
-│   ├── summarizer.py        # Email summarization
-│   ├── reply_drafter.py     # RAG-based reply generation
-│   └── scheduler.py         # Follow-up scheduling
-├── core/
-│   ├── config.py            # Configuration management
-│   ├── gmail_client.py      # Gmail API wrapper
-│   ├── llm_client.py        # LLM provider integration
-│   └── vector_store.py      # RAG vector database (ChromaDB)
-├── utils/
-│   ├── logger.py            # Logging utilities
-│   ├── sheets_client.py     # Google Sheets integration
-│   └── helpers.py           # Helper functions
-├── data/                    # Vector store & follow-ups
-├── logs/                    # Application logs
-├── main.py                  # Main orchestrator
-├── requirements.txt
-├── .env.example
-└── README.md
+```bash
+uv run inbox-agent serve [--host 0.0.0.0 --port 8000]   # web UI
+uv run inbox-agent triage                                # fetch and triage once
+uv run inbox-agent run                                   # fetch and triage on a loop
+uv run inbox-agent digest                                # print today's digest
+uv run inbox-agent demo-reset                            # reseed the demo mailbox
+uv run pytest                                            # tests
 ```
 
-## Agents Overview
+## Public demo with Docker
 
-### 1. Fetcher Agent
-- Fetches unread emails from Gmail inbox
-- Marks emails as read after processing
-- Handles Gmail API authentication
+`compose.yaml` runs the demo for anyone to try: recorded answers, a reset every hour, nothing sent. Keep API keys out of it, since anyone with the URL could spend them through *Rewrite*.
 
-### 2. Classifier Agent
-- Categorizes emails: urgent, important, promotional, newsletter, spam, general
-- Assigns priority: high, medium, low
-- Provides confidence scores and reasoning
-- Determines if auto-response is appropriate
+```bash
+docker compose up -d --build    # listens on 127.0.0.1:8010; put Caddy or nginx in front for HTTPS
+```
 
-### 3. Summarizer Agent
-- Generates concise 2-3 sentence summaries
-- Extracts key points and action items
-- Analyzes sentiment: positive, neutral, negative, urgent
-- Extracts sender information
+## How it's built
 
-### 4. Reply Drafter Agent
-- Uses RAG to find similar past responses
-- Generates context-aware, professional replies
-- Matches tone to incoming email
-- Allows refinement based on feedback
-- Learns from approved replies
+Python 3.12, FastAPI, Jinja templates with htmx, and SQLite. Similar past replies are found with BM25 over your approved replies. That is fast and dependency-free at the size of a personal inbox, and `inbox_agent/retrieval.py` is the one place to change if you want embeddings. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-### 5. Scheduler Agent
-- Schedules follow-up reminders
-- Tracks pending and completed follow-ups
-- Provides follow-up statistics
-- Stores data persistently
-
-## RAG (Retrieval-Augmented Generation)
-
-The system uses RAG to improve reply quality:
-
-1. **Vector Store**: Stores past email-response pairs as embeddings
-2. **Similarity Search**: Finds relevant past responses for context
-3. **Context Injection**: Includes similar responses when drafting
-4. **Continuous Learning**: Learns from every approved reply
-
-## Google Sheets Integration
-
-Logs the following for each email:
-- Timestamp
-- Email ID, From, Subject
-- Category & Priority
-- Summary
-- Reply sent status
-- Reply time (seconds)
-- Follow-up date
-
-## API Keys
-
-### Anthropic Claude (Recommended)
-- Sign up at [Anthropic](https://www.anthropic.com/)
-- Get API key from console
-- Uses Claude Sonnet 4 for intelligent processing
-
-### OpenAI (Alternative)
-- Sign up at [OpenAI](https://platform.openai.com/)
-- Get API key from dashboard
-- Uses GPT-4 Turbo
-
-## Troubleshooting
-
-### Gmail Authentication Issues
-- Ensure Gmail API is enabled in Google Cloud Console
-- Check that `credentials.json` is in the project root
-- Delete `token.json` and re-authenticate if needed
-
-### No Emails Found
-- Check that there are unread emails in your inbox
-- Verify Gmail API permissions are granted
-- Check logs for API errors
-
-### Reply Generation Errors
-- Verify API keys are correct in `.env`
-- Check API quota limits
-- Review logs for detailed error messages
-
-### Vector Store Issues
-- Ensure `data/` directory exists and is writable
-- Delete `data/vector_store/` to reset the database
-
-## Performance Metrics
-
-Based on testing with 1000+ emails:
-
-| Metric | Value |
-|--------|-------|
-| Average processing time | 5-10s per email |
-| Classification accuracy | 92% |
-| Reply quality (user satisfaction) | 4.6/5.0 |
-| Time saved per day | 2-3 hours |
-| Missed follow-ups | 0% |
-
-## Security & Privacy
-
-- All processing happens locally or through secure APIs
-- Gmail credentials stored locally in `token.json`
-- No email content is stored permanently (except in vector DB)
-- API keys are never logged or exposed
-
-## Limitations
-
-- Requires internet connection for API calls
-- Gmail API rate limits apply (quota: 250 quota units per user per second)
-- LLM API costs apply based on usage
-- English language works best (multilingual support experimental)
-
-## Future Enhancements
-
-- [ ] Multi-language support
-- [ ] Custom response templates
-- [ ] Email threading support
-- [ ] Attachment handling
-- [ ] Calendar integration for scheduling
-- [ ] Slack/Teams notifications
-- [ ] Web dashboard interface
-- [ ] Advanced analytics and reporting
-
-## Contributing
-
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## License
-
-MIT License - feel free to use and modify as needed.
-
-## Support
-
-For issues and questions:
-- Check logs in `logs/` directory
-- Review error messages carefully
-- Ensure all dependencies are installed
-- Verify API credentials are valid
-
-## Acknowledgments
-
-Built with:
-- Gmail API
-- Anthropic Claude / OpenAI GPT
-- ChromaDB for vector storage
-- LangChain for RAG pipeline
-- Sentence Transformers for embeddings
+```
+inbox_agent/
+  pipeline.py    fetch → classify → summarise → draft → approve → send → remember
+  agents.py      the three prompts (classifier, summariser, drafter)
+  llm.py         Anthropic / OpenAI / Gemini / DeepSeek + recorded answers
+  retrieval.py   BM25 over approved replies
+  mailbox.py     Gmail and the demo mailbox
+  store.py       SQLite
+  web/           FastAPI app, templates, CSS
+  demo/          fictional mailbox, recorded answers, seeder
+```
 
 ---
 
-**Built for the future of intelligent inbox management.**
+Built by [CodeITronics](https://codeitronics.com). We build AI agents and automation for operations teams.

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block main %}
+<div class="head"><div><p class="kicker">Settings</p><h1>Rules</h1></div></div>
+{% if saved %}<p class="note ok">Saved.</p>{% endif %}
+<div class="split">
+  <form method="post" action="/settings" class="block form">
+    <label class="check"><input type="checkbox" name="approval_required" {{ 'checked' if rules.approval_required }}> Require my approval before any reply is sent</label>
+    <p class="muted small">Turning this off sends drafts automatically. We recommend leaving it on.</p>
+
+    <fieldset>
+      <legend>Draft replies for these categories</legend>
+      {% for c in categories %}
+      <label class="check"><input type="checkbox" name="draft_for_categories" value="{{ c }}" {{ 'checked' if c in rules.draft_for_categories }}> {{ c }}</label>
+      {% endfor %}
+    </fieldset>
+
+    <label>Only draft when priority is at least
+      <select name="draft_min_priority">
+        {% for p in ['high', 'medium', 'low'] %}<option value="{{ p }}" {{ 'selected' if rules.draft_min_priority == p }}>{{ p }}</option>{% endfor %}
+      </select>
+    </label>
+
+    <label>Follow up on medium-priority email after (days)
+      <input type="number" name="follow_up_days" min="1" max="30" value="{{ rules.follow_up_days }}">
+    </label>
+    <div><button class="btn btn-primary">Save rules</button></div>
+  </form>
+
+  <section class="block">
+    <h2>Connection</h2>
+    <dl class="dl">
+      <dt>Mode</dt><dd>{{ 'Demo (fictional mailbox)' if demo else 'Gmail' }}</dd>
+      <dt>AI provider</dt><dd>{{ provider }}</dd>
+      <dt>Model</dt><dd>{{ model }}</dd>
+      <dt>Signature</dt><dd class="pre">{{ settings.owner_signature }}</dd>
+    </dl>
+    <p class="muted small">Provider, model, mailbox and signature come from environment variables. See the README.</p>
+  </section>
+</div>
+{% endblock %}

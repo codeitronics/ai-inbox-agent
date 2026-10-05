@@ -1,0 +1,17 @@
+# Public demo: fictional mailbox, recorded AI answers, resets every hour, nothing is sent.
+# Do not put API keys in this service: anyone with the URL could spend them through "Rewrite".
+services:
+  inbox-demo:
+    build: .
+    restart: unless-stopped
+    environment:
+      DEMO_MODE: "true"
+      AI_PROVIDER: recorded
+      DEMO_RESET_MINUTES: "60"
+    ports:
+      - "127.0.0.1:8010:8000" # put Caddy/nginx in front for HTTPS
+    volumes:
+      - inbox-demo-data:/app/data
+
+volumes:
+  inbox-demo-data:

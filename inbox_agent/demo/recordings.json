@@ -1,0 +1,88 @@
+{
+  "h1": {
+    "classify": {"category": "important", "priority": "medium", "confidence": 0.86, "reasoning": "Key customer asking to change a confirmed delivery window."},
+    "summarize": {"summary": "Harbor Fresh's DC closes early on 2 October; Priya asks to move Thursday's delivery from 2-4pm to 9-11am.", "key_points": ["DC closing early for a stock count", "Current window 2-4pm"], "action_items": ["Confirm whether the 9-11am window works"], "sentiment": "neutral"},
+    "draft": {"subject": "Re: Delivery window change for 2 October", "body": "Hi Priya,\n\nNo problem. I've moved Thursday's delivery to the 9-11am window and let the carrier know. You'll get the updated appointment confirmation this afternoon.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "friendly", "confidence": 0.9}
+  },
+  "h2": {
+    "classify": {"category": "important", "priority": "medium", "confidence": 0.82, "reasoning": "Customer AP needs a document to release payment."},
+    "summarize": {"summary": "Tom needs the signed POD for order 88213 so Alder & Finch can release payment.", "key_points": ["Order 88213", "Payment is blocked on the POD"], "action_items": ["Send the signed POD for order 88213"], "sentiment": "neutral"},
+    "draft": {"subject": "Re: POD for order 88213?", "body": "Hi Tom,\n\nThe signed POD for order 88213 is attached. Let me know if your AP team needs anything else to release payment.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "friendly", "confidence": 0.88}
+  },
+  "h3": {
+    "classify": {"category": "newsletter", "priority": "low", "confidence": 0.8, "reasoning": "Routine carrier update with no action."},
+    "summarize": {"summary": "Ridgeline's October fuel surcharge is 31.5% of linehaul, down from 32.1%.", "key_points": ["31.5% for October", "Down 0.6 points"], "action_items": [], "sentiment": "neutral"}
+  },
+  "h4": {
+    "classify": {"category": "promotional", "priority": "low", "confidence": 0.95, "reasoning": "Software free-trial marketing."},
+    "summarize": {"summary": "DockMaster is offering a 30-day free trial of DockMaster Pro.", "key_points": [], "action_items": [], "sentiment": "neutral"}
+  },
+  "h5": {
+    "classify": {"category": "general", "priority": "medium", "confidence": 0.78, "reasoning": "Internal request for approval of a maintenance window."},
+    "summarize": {"summary": "Forklift servicing is available Saturday 8am-noon; dock 3 can't load until noon. Sam wants approval.", "key_points": ["Saturday 8am-noon", "Dock 3 closed until 12"], "action_items": ["Approve or reject the Saturday slot"], "sentiment": "neutral"},
+    "draft": {"subject": "Re: Forklift maintenance Saturday", "body": "Hi Sam,\n\nGo ahead and confirm Saturday 8am-noon. Please move the two morning loads on dock 3 to dock 5 so nothing waits.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "friendly", "confidence": 0.86}
+  },
+  "h6": {
+    "classify": {"category": "general", "priority": "medium", "confidence": 0.62, "reasoning": "Unsolicited recruiter outreach asking for a call."},
+    "summarize": {"summary": "A recruiter from TalentBridge asks for 15 minutes to discuss Q4 hiring.", "key_points": ["Cold outreach"], "action_items": [], "sentiment": "neutral"},
+    "draft": {"subject": "Re: Quick question about your logistics hiring", "body": "Hi Chris,\n\nThanks for reaching out. We don't have any open roles we're recruiting for externally right now, but I'll keep your details on file.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "professional", "confidence": 0.7}
+  },
+  "e101": {
+    "classify": {"category": "urgent", "priority": "high", "confidence": 0.97, "reasoning": "Failed reefer with perishable product and a 3pm decision deadline."},
+    "summarize": {"summary": "The reefer on load 6120 failed after Joliet and the trailer is at 7°C with 22 pallets of dairy. Priya needs a decision by 3pm: replacement trailer or cross-dock at Gary.", "key_points": ["Load 6120, 22 pallets of dairy", "Trailer at 7°C; QA rejects >5°C for over 2 hours", "Alternative: cross-dock at Harbor Fresh's Gary facility"], "action_items": ["Decide replacement trailer vs Gary cross-dock before 3pm", "Call Priya if faster"], "sentiment": "urgent"},
+    "draft": {"subject": "Re: URGENT: reefer unit failed on load 6120", "body": "Hi Priya,\n\nThanks for the fast heads-up. I'm on it now: I've asked dispatch for the nearest available reefer trailer to meet the driver, and I'll confirm an ETA within 30 minutes. If we can't get one there inside your two-hour window, we'll go with cross-docking at Gary and cover the cost.\n\nPlease have your QA team hold the pallets on arrival until we've reviewed the temperature log together. I'll call you before 2pm either way.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "professional", "confidence": 0.84},
+    "refine": {"subject": "Re: URGENT: reefer unit failed on load 6120", "body": "Hi Priya,\n\nOn it. Dispatch is sourcing the nearest reefer now and I'll send you an ETA within 30 minutes. If it can't reach the driver inside your two-hour window, we'll cross-dock at Gary and cover the cost.\n\nI'll call you before 2pm.\n\nDana", "tone": "professional", "confidence": 0.86}
+  },
+  "e102": {
+    "classify": {"category": "important", "priority": "high", "confidence": 0.9, "reasoning": "Billing dispute from a customer with a month-end deadline on Friday."},
+    "summarize": {"summary": "Alder & Finch says INV-4471 bills 14 pallets for the 26 September pickup, but their BOL shows 12. Tom wants a corrected invoice before Friday's month-end close.", "key_points": ["INV-4471, 26 September pickup", "Billed 14 pallets, BOL shows 12", "Month-end close on Friday"], "action_items": ["Check the receiving record for the pickup", "Send a corrected invoice before Friday"], "sentiment": "neutral"},
+    "draft": {"subject": "Re: INV-4471 shows 14 pallets, we shipped 12", "body": "Hi Tom,\n\nThanks for flagging this. I'm checking our receiving record for the 26 September pickup against your BOL now. If it confirms 12 pallets, I'll have finance reissue INV-4471 with the corrected storage and handling lines, and you'll have it before your Friday close.\n\nI'll update you by end of day tomorrow.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "professional", "confidence": 0.88},
+    "refine": {"subject": "Re: INV-4471 shows 14 pallets, we shipped 12", "body": "Hi Tom,\n\nYou're right: our receiving record also shows 12 pallets for the 26 September pickup. I've asked finance to reissue INV-4471 for 12 pallets; you'll have the corrected invoice by Thursday, ahead of your close.\n\nSorry for the mix-up.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "professional", "confidence": 0.9}
+  },
+  "e103": {
+    "classify": {"category": "important", "priority": "medium", "confidence": 0.83, "reasoning": "Carrier quote that needs a volume decision by 15 October."},
+    "summarize": {"summary": "Ridgeline quotes Q4 rates of $1,840 (Chicago→Columbus) and $1,290 (Chicago→Indianapolis), valid to 31 December, assuming 8+ loads a week. Volume must be confirmed by 15 October to hold peak capacity.", "key_points": ["$1,840 per load Chicago→Columbus", "$1,290 per load Chicago→Indianapolis", "Needs 8+ loads/week; confirm by 15 October"], "action_items": ["Compare with current carrier rates", "Confirm weekly volume by 15 October"], "sentiment": "positive"},
+    "draft": {"subject": "Re: Q4 quote: Chicago to Columbus and Indianapolis lanes", "body": "Hi Marcus,\n\nThanks for the Q4 rates. Before we commit to 8 loads a week, could you confirm whether the rates include fuel surcharge at the current index, and share your on-time performance on these two lanes for the last quarter?\n\nI'll compare against our current carrier and come back to you before 15 October.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "professional", "confidence": 0.86},
+    "refine": {"subject": "Re: Q4 quote: Chicago to Columbus and Indianapolis lanes", "body": "Hi Marcus,\n\nThanks for the Q4 rates. Two questions before we commit to 8 loads a week: do the rates include fuel surcharge at today's index, and what was your on-time percentage on these lanes last quarter? Could we also start at 6 loads a week for October and step up for peak?\n\nI'll confirm volume before 15 October.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "professional", "confidence": 0.85}
+  },
+  "e104": {
+    "classify": {"category": "general", "priority": "medium", "confidence": 0.8, "reasoning": "Internal scheduling request."},
+    "summarize": {"summary": "Sam asks to move the weekly dock review from Thursday to Friday at 10am because two shift leads are on the Harbor Fresh audit.", "key_points": ["Two shift leads busy Thursday", "Proposed: Friday 10am, same room"], "action_items": ["Confirm the new time"], "sentiment": "neutral"},
+    "draft": {"subject": "Re: Move Thursday's dock review to Friday 10am?", "body": "Hi Sam,\n\nFriday at 10am works. Please move the invite and add the audit findings as the first agenda item so we can cover them while they're fresh.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "friendly", "confidence": 0.9},
+    "refine": {"subject": "Re: Move Thursday's dock review to Friday 10am?", "body": "Friday 10am is fine, Sam. Please move the invite and put the audit findings first on the agenda.\n\nDana", "tone": "friendly", "confidence": 0.9}
+  },
+  "e105": {
+    "classify": {"category": "newsletter", "priority": "low", "confidence": 0.94, "reasoning": "Industry newsletter, no action needed."},
+    "summarize": {"summary": "Peak capacity is expected to tighten from mid-November; West Coast port dwell is 3.2 days; 2027 LTL rate increases average 5.9%.", "key_points": ["Peak tightens mid-November", "Port dwell 3.2 days", "LTL GRIs average 5.9%"], "action_items": [], "sentiment": "neutral"}
+  },
+  "e106": {
+    "classify": {"category": "promotional", "priority": "low", "confidence": 0.97, "reasoning": "Discount offer with an unsubscribe link."},
+    "summarize": {"summary": "FleetTrack Pro is offering 40% off annual plans until midnight.", "key_points": [], "action_items": [], "sentiment": "neutral"}
+  },
+  "e107": {
+    "classify": {"category": "spam", "priority": "low", "confidence": 0.96, "reasoning": "Phishing: lookalike Microsoft domain, false urgency and a credential link."},
+    "summarize": {"summary": "Likely phishing: a lookalike 'm1crosoft' domain asks you to verify your password via a link within 2 hours. Don't click; report it to IT.", "key_points": ["Sender domain imitates Microsoft", "Pressure to act within 2 hours", "Links to a credential page"], "action_items": ["Report to IT; do not click the link"], "sentiment": "urgent"}
+  },
+  "e108": {
+    "classify": {"category": "important", "priority": "medium", "confidence": 0.87, "reasoning": "Finance needs confirmation of accruals for month-end by Friday noon."},
+    "summarize": {"summary": "Finance has accrued $48,200 of uninvoiced September freight (Ridgeline $31,500, Coldline $16,700) and needs confirmation or a list of missing loads by Friday noon.", "key_points": ["Total accrual $48,200", "Ridgeline $31,500; Coldline Carriers $16,700", "Deadline: Friday noon"], "action_items": ["Check uninvoiced September loads against the accrual", "Reply to Lena by Friday noon"], "sentiment": "neutral"},
+    "draft": {"subject": "Re: September freight accruals: please confirm by Friday", "body": "Hi Lena,\n\nThanks. The Ridgeline figure looks right. For Coldline I count 11 uninvoiced loads, so I'd expect closer to $18,000; I'll send you the load list by Thursday so you can adjust before Friday noon.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "professional", "confidence": 0.62},
+    "refine": {"subject": "Re: September freight accruals: please confirm by Friday", "body": "Hi Lena,\n\nThanks for pulling this together. I'll check both carriers' uninvoiced September loads against your figures and send you confirmation, or the list of missing loads, by Thursday so you have time before Friday noon.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "professional", "confidence": 0.85}
+  },
+  "e109": {
+    "classify": {"category": "urgent", "priority": "high", "confidence": 0.98, "reasoning": "Escalation on a live temperature incident with a 30-minute deadline."},
+    "summarize": {"summary": "Priya is chasing an update on load 6120: the trailer is now at 8°C and she'll arrange the Gary cross-dock herself if there's no reply in 30 minutes.", "key_points": ["Trailer now at 8°C", "30-minute deadline before Harbor Fresh acts alone"], "action_items": ["Reply with the replacement-trailer ETA or approve the Gary cross-dock now"], "sentiment": "urgent"},
+    "draft": {"subject": "Re: URGENT: reefer unit failed on load 6120", "body": "Hi Priya,\n\nSorry for the wait. Given the trailer is now at 8°C, let's not risk it: please go ahead with the cross-dock at Gary, and we'll cover the cost. Dispatch will reroute the driver to Gary now; I'll send you the ETA in the next 15 minutes.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "professional", "confidence": 0.8},
+    "refine": {"subject": "Re: URGENT: reefer unit failed on load 6120", "body": "Hi Priya,\n\nPlease go ahead with the Gary cross-dock; we'll cover the cost. The driver is being rerouted to Gary now and I'll send the ETA within 15 minutes. I'm calling you right after this.\n\nDana", "tone": "professional", "confidence": 0.84}
+  },
+  "e110": {
+    "classify": {"category": "general", "priority": "medium", "confidence": 0.76, "reasoning": "New carrier sending onboarding documents and asking what else is needed."},
+    "summarize": {"summary": "BlueLine Haulage sent its W-9, certificate of insurance ($1M auto, $100K cargo) and MC authority, and asks what else is needed to start on the Milwaukee lanes.", "key_points": ["W-9, COI and MC authority received", "Cargo cover $100K", "Interested in Milwaukee lanes"], "action_items": ["Check cargo insurance against the minimum requirement", "Tell Jordan what's still missing"], "sentiment": "positive"},
+    "draft": {"subject": "Re: Carrier onboarding documents for BlueLine Haulage", "body": "Hi Jordan,\n\nThanks for sending these over so quickly. To finish setting you up we'll also need a signed carrier agreement and your ACH details for payment; I'll send both forms today.\n\nOne note: our dairy and grocery loads require at least $250K cargo cover, so if you'd like those lanes, please send an updated certificate. Milwaukee dry-van loads are fine at $100K.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "professional", "confidence": 0.79},
+    "refine": {"subject": "Re: Carrier onboarding documents for BlueLine Haulage", "body": "Hi Jordan,\n\nThanks for the documents. We still need a signed carrier agreement and ACH details; both forms are on their way today. For refrigerated loads we require $250K cargo cover, but Milwaukee dry-van lanes are fine at $100K, so we can start you there.\n\nDana Ruiz\nOperations Lead, Northwind Logistics", "tone": "professional", "confidence": 0.82}
+  },
+  "e111": {
+    "classify": {"category": "newsletter", "priority": "low", "confidence": 0.93, "reasoning": "Weekly industry digest."},
+    "summarize": {"summary": "Warehouse Weekly: five slotting mistakes that slow picking, a voice-picking case study and the 2027 labour outlook.", "key_points": [], "action_items": [], "sentiment": "neutral"}
+  }
+}

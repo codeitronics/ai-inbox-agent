@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% from "_macros.html" import tags, status %}
+{% block title %}{{ e.subject }}{% endblock %}
+{% block main %}
+<p class="crumb"><a href="/">← Inbox</a></p>
+<div class="email-grid">
+  <article class="mail">
+    <div class="meta">{{ tags(e) }} {{ status(e) }}</div>
+    <h1>{{ e.subject }}</h1>
+    <p class="from">{{ e.sender }} · {{ e.received_at|ago }}</p>
+    <div class="body">{{ e.body }}</div>
+
+    {% if e.status == 'new' %}
+    <form method="post" action="/email/{{ e.id }}/triage" class="triage">
+      <button class="btn btn-primary">Triage this email</button><span class="htmx-indicator">Reading…</span>
+    </form>
+    {% endif %}
+
+    {% if e.draft_body %}
+    <section id="draft" class="draft">
+      <div class="draft-head">
+        <p class="kicker">{% if e.status == 'sent' %}Sent reply{% else %}Drafted reply{% endif %}</p>
+        <span class="conf {{ 'conf-low' if e.draft_confidence < 0.7 }}">confidence {{ (e.draft_confidence * 100)|round|int }}%{% if e.draft_confidence < 0.7 %} · check the facts{% endif %}</span>
+      </div>
+      {% if e.status in ('sent', 'skipped') %}
+        <p class="subj">{{ e.draft_subject }}</p>
+        <div class="body">{{ e.draft_body }}</div>
+        {% if sent %}<p class="note">{{ 'Recorded in the demo Sent box (not actually emailed)' if sent.mock else 'Sent' }} · {{ sent.sent_at|ago }}</p>{% endif %}
+      {% else %}
+      <form method="post" action="/email/{{ e.id }}/approve" class="draft-form">
+        <label>Subject <input name="subject" value="{{ e.draft_subject }}"></label>
+        <label>Reply <textarea name="body" rows="12">{{ e.draft_body }}</textarea></label>
+        <div class="actions">
+          <button class="btn btn-primary">Approve &amp; send</button>
+          <button class="btn" formaction="/email/{{ e.id }}/skip">Skip</button>
+        </div>
+      </form>
+      <form method="post" action="/email/{{ e.id }}/refine" class="refine">
+        <input type="hidden" name="body" value="{{ e.draft_body }}">
+        <label>Ask for changes <input name="feedback" placeholder="e.g. shorter, and confirm we'll cover the cost"></label>
+        <button class="btn">Rewrite</button><span class="htmx-indicator">Rewriting…</span>
+        {% if provider == 'recorded' %}<p class="note">Recorded mode replays one prepared rewrite; with an API key the agent follows your exact instruction.</p>{% endif %}
+      </form>
+      {% endif %}
+    </section>
+    {% elif e.status == 'fyi' %}
+    <p class="note">No reply drafted: {{ 'filtered as ' ~ e.category if e.category in ('promotional','spam','newsletter') else 'priority or category is outside your drafting rules' }}. <a href="/settings">Change rules</a></p>
+    {% endif %}
+  </article>
+
+  <aside class="side analysis">
+    {% if e.summary %}
+    <p class="kicker">Summary</p>
+    <p class="lead">{{ e.summary }}</p>
+    {% if e.action_items %}
+    <p class="kicker">Action items</p>
+    <ul class="ticks">{% for a in e.action_items %}<li>{{ a }}</li>{% endfor %}</ul>
+    {% endif %}
+    {% if e.key_points %}
+    <p class="kicker">Key points</p>
+    <ul>{% for k in e.key_points %}<li>{{ k }}</li>{% endfor %}</ul>
+    {% endif %}
+    <p class="kicker">Why this priority</p>
+    <p>{{ e.reasoning }} <span class="muted">({{ (e.confidence * 100)|round|int }}% sure, sentiment {{ e.sentiment }})</span></p>
+    {% if examples %}
+    <p class="kicker">Past replies it drew on</p>
+    <ul class="sources">{% for x in examples %}<li><strong>{{ x.subject }}</strong><span class="muted"> · match {{ x.score }}</span><br><span class="muted">{{ x.reply[:140] }}…</span></li>{% endfor %}</ul>
+    {% endif %}
+    {% if followup %}
+    <p class="kicker">Follow-up</p>
+    <p>{% if followup.status == 'done' %}Done{% else %}Due {{ followup.due_at|ago }}{% endif %} · <a href="/followups">all follow-ups</a></p>
+    {% endif %}
+    {% if provider != 'recorded' %}<p class="muted small">Triaged in {{ e.processing_ms }} ms by {{ model }}</p>{% endif %}
+    {% else %}
+    <p class="note">Not triaged yet.</p>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

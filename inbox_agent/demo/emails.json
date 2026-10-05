@@ -1,0 +1,130 @@
+{
+  "_note": "Fictional mailbox for the demo. Every person, company and address here is invented.",
+  "memory": [
+    {
+      "days_ago": 21,
+      "subject": "Temperature excursion on load 5512",
+      "category": "urgent",
+      "incoming": "Our receiver logged 9°C on arrival for load 5512. Product was supposed to stay at 2-4°C. What happened and what are you doing about it?",
+      "reply": "Hi Priya,\n\nThank you for flagging this straight away. I've pulled the reefer log for load 5512: the unit alarmed at 06:40 and the driver reset it at 07:05, so the product sat above range for about 25 minutes. I've opened a claim with the carrier and put the trailer out of service until it's inspected.\n\nPlease hold the affected pallets; our QA lead will call you by 2pm today to agree on disposition, and we'll cover the cost of anything you reject.\n\nDana Ruiz\nOperations Lead, Northwind Logistics"
+    },
+    {
+      "days_ago": 16,
+      "subject": "Invoice question INV-4302",
+      "category": "important",
+      "incoming": "INV-4302 charges detention for 3 hours but our dock released the truck after 1 hour. Can you correct it?",
+      "reply": "Hi Tom,\n\nYou're right to query it. Our gate log shows the truck checked out at 11:52, so detention should be 1 hour, not 3. I've asked finance to reissue INV-4302 with the corrected line; you'll have the credit note within two working days.\n\nSorry for the hassle.\n\nDana Ruiz\nOperations Lead, Northwind Logistics"
+    },
+    {
+      "days_ago": 12,
+      "subject": "Rate request: Dallas to Atlanta",
+      "category": "important",
+      "incoming": "Sharing our rates for the Dallas to Atlanta lane, valid 60 days. Let me know if you want to lock in volume.",
+      "reply": "Hi Marcus,\n\nThanks for the quick turnaround. Before we commit volume, could you confirm two things: whether the rate includes fuel surcharge at today's index, and your on-time percentage on this lane for the last quarter? I'll compare against our current carrier and get back to you by Friday.\n\nDana Ruiz\nOperations Lead, Northwind Logistics"
+    }
+  ],
+  "emails": [
+    {
+      "id": "h1", "phase": "history", "outcome": "sent", "minutes_ago": 3020,
+      "sender": "Priya Nair <priya.nair@harborfresh.example>",
+      "subject": "Delivery window change for 2 October",
+      "body": "Hi Dana,\n\nOur DC is closing early on 2 October for a stock count. Can we move Thursday's delivery from 2-4pm to 9-11am?\n\nThanks,\nPriya"
+    },
+    {
+      "id": "h2", "phase": "history", "outcome": "sent", "minutes_ago": 2610,
+      "sender": "Tom Becker <tom.becker@alderfinch.example>",
+      "subject": "POD for order 88213?",
+      "body": "Hi Dana, could you send the signed proof of delivery for order 88213? Our AP team needs it to release payment. Cheers, Tom"
+    },
+    {
+      "id": "h3", "phase": "history", "outcome": "fyi", "minutes_ago": 1900,
+      "sender": "Ridgeline Freight <updates@ridgelinefreight.example>",
+      "subject": "Fuel surcharge table for October",
+      "body": "Our fuel surcharge for October is 31.5% of linehaul, down from 32.1% in September. The full table is attached. No action needed."
+    },
+    {
+      "id": "h4", "phase": "history", "outcome": "fyi", "minutes_ago": 1500,
+      "sender": "DockMaster Software <hello@dockmaster.example>",
+      "subject": "Your free trial of DockMaster Pro is waiting",
+      "body": "Schedule docks 3x faster with DockMaster Pro. Start your 30-day free trial today — no credit card needed. Unsubscribe here."
+    },
+    {
+      "id": "h5", "phase": "history", "outcome": "sent", "minutes_ago": 1380,
+      "sender": "Sam Patel <sam.patel@northwind.example>",
+      "subject": "Forklift maintenance Saturday",
+      "body": "Dana, the forklift service team can come Saturday 8am-noon. That means no loading on dock 3 until 12. OK to confirm?\n\nSam"
+    },
+    {
+      "id": "h6", "phase": "history", "outcome": "skipped", "minutes_ago": 1100,
+      "sender": "Chris Walden <chris@talentbridge.example>",
+      "subject": "Quick question about your logistics hiring",
+      "body": "Hi Dana, I help logistics teams hire faster. Do you have 15 minutes this week to talk about your hiring plans for Q4?\n\nBest, Chris"
+    },
+    {
+      "id": "e101", "phase": "triaged", "minutes_ago": 38,
+      "sender": "Priya Nair <priya.nair@harborfresh.example>",
+      "subject": "URGENT: reefer unit failed on load 6120",
+      "body": "Dana,\n\nThe driver on load 6120 just called our receiving desk: the reefer unit failed somewhere after Joliet and the trailer is reading 7°C. There are 22 pallets of dairy on board and our QA team will reject anything that's been above 5°C for more than two hours.\n\nI need to know by 3pm today whether you can get a replacement trailer to the driver or whether we should arrange cross-docking at our Gary facility. Please call me if that's faster.\n\nPriya Nair\nLogistics Manager, Harbor Fresh Foods"
+    },
+    {
+      "id": "e102", "phase": "triaged", "minutes_ago": 95,
+      "sender": "Tom Becker <tom.becker@alderfinch.example>",
+      "subject": "INV-4471 shows 14 pallets, we shipped 12",
+      "body": "Hi Dana,\n\nINV-4471 for the 26 September pickup bills us for 14 pallets of storage and handling, but our shipment was 12 pallets (BOL attached shows 12). Can you check and send a corrected invoice? Our month-end close is on Friday so we'd like to sort it before then.\n\nThanks,\nTom Becker\nAccounts Payable, Alder & Finch Retail"
+    },
+    {
+      "id": "e103", "phase": "triaged", "minutes_ago": 160,
+      "sender": "Marcus Ojo <marcus.ojo@ridgelinefreight.example>",
+      "subject": "Q4 quote: Chicago to Columbus and Indianapolis lanes",
+      "body": "Hi Dana,\n\nAs discussed, here are our Q4 rates:\n- Chicago → Columbus: $1,840 per load (53' dry van)\n- Chicago → Indianapolis: $1,290 per load\n\nRates are valid until 31 December and assume at least 8 loads a week across both lanes. If you can confirm volume by 15 October we can hold capacity for peak.\n\nBest,\nMarcus Ojo\nAccount Executive, Ridgeline Freight"
+    },
+    {
+      "id": "e104", "phase": "triaged", "minutes_ago": 210,
+      "sender": "Sam Patel <sam.patel@northwind.example>",
+      "subject": "Move Thursday's dock review to Friday 10am?",
+      "body": "Hi Dana, two of the shift leads are on the Harbor Fresh audit on Thursday. Could we move the weekly dock review to Friday at 10am? Same room. — Sam"
+    },
+    {
+      "id": "e105", "phase": "triaged", "minutes_ago": 300,
+      "sender": "Supply Chain Brief <newsletter@scbrief.example>",
+      "subject": "This week: peak season capacity, port congestion, and LTL rates",
+      "body": "In this issue: carriers expect peak capacity to tighten from mid-November; West Coast port dwell times are back to 3.2 days; LTL general rate increases average 5.9% for 2027. Read online. Manage your subscription."
+    },
+    {
+      "id": "e106", "phase": "triaged", "minutes_ago": 340,
+      "sender": "FleetTrack Pro <offers@fleettrack.example>",
+      "subject": "Last chance: 40% off FleetTrack Pro annual plans",
+      "body": "Your 40% discount ends tonight at midnight. Real-time GPS, driver scorecards and ELD compliance in one dashboard. Upgrade now. Unsubscribe."
+    },
+    {
+      "id": "e107", "phase": "triaged", "minutes_ago": 410,
+      "sender": "IT Helpdesk <it-support@m1crosoft-365-account.example>",
+      "subject": "Action required: your password expires today",
+      "body": "Your Microsoft 365 password expires today. To keep your mailbox active, verify your account within 2 hours using the secure link below: http://m1crosoft-365-account.example/verify\n\nIT Helpdesk"
+    },
+    {
+      "id": "e108", "phase": "triaged", "minutes_ago": 470,
+      "sender": "Lena Hart <lena.hart@northwind.example>",
+      "subject": "September freight accruals: please confirm by Friday",
+      "body": "Hi Dana,\n\nFor the September close I've accrued $48,200 for freight that hasn't been invoiced yet, mostly Ridgeline ($31,500) and Coldline Carriers ($16,700). Could you confirm those numbers look right, or tell me which loads are missing, by Friday noon?\n\nThanks,\nLena\nFinance, Northwind Logistics"
+    },
+    {
+      "id": "e109", "phase": "new", "minutes_ago": 6,
+      "sender": "Priya Nair <priya.nair@harborfresh.example>",
+      "subject": "Re: URGENT: reefer unit failed on load 6120",
+      "body": "Dana, any update? The trailer is now at 8°C. If I don't hear back in 30 minutes I'll start arranging cross-dock at Gary on our side. Priya"
+    },
+    {
+      "id": "e110", "phase": "new", "minutes_ago": 14,
+      "sender": "Jordan Lee <jordan.lee@bluelinehaulage.example>",
+      "subject": "Carrier onboarding documents for BlueLine Haulage",
+      "body": "Hello Dana,\n\nThanks for considering BlueLine Haulage. Attached are our W-9, certificate of insurance ($1M auto, $100K cargo) and MC authority. Is there anything else you need to set us up as a carrier? We'd love to start with your Milwaukee lanes.\n\nJordan Lee\nBlueLine Haulage"
+    },
+    {
+      "id": "e111", "phase": "new", "minutes_ago": 22,
+      "sender": "Warehouse Weekly <digest@warehouseweekly.example>",
+      "subject": "5 slotting mistakes that slow down picking",
+      "body": "This week's digest: five slotting mistakes, a case study on voice picking, and the 2027 warehouse labour outlook. Read more. Unsubscribe."
+    }
+  ]
+}
