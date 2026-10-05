@@ -61,7 +61,10 @@ Body: {e['body'][:6000]}
 
 Category: {c['category']} / Priority: {c['priority']}
 
-Return JSON: {{"summary": "1-2 sentences", "key_points": ["..."], "action_items": ["what the reader must do, with any deadline"], "sentiment": "positive | neutral | negative | urgent"}}"""
+Return JSON: {{"summary": "1-2 sentences", "key_points": ["..."], "action_items": ["what the reader must do, with any deadline"], "sentiment": "positive | neutral | negative | urgent"}}
+
+Action items are only things the reader actually has to do, each starting with a verb. Leave the list empty for
+newsletters, promotions and FYI mail; never list optional actions such as reading, unsubscribing or "no action needed"."""
         r = self.llm.json("summarize", self.system, prompt, key=e["id"])
         return {
             "summary": r.get("summary") or e["body"][:200],
