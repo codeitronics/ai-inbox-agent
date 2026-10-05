@@ -119,3 +119,8 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--ink); outli
 .digest { max-width: 760px; }
 .digest h2 { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--ink); }
 .digest-list { padding-left: 20px; } .digest-list li { margin-bottom: 12px; }
+
+.ok-text { color: var(--ok); } .warn-text { color: var(--high); }
+.tasks-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: -6px 0 16px; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.task-done { color: var(--ok); } .task-fail { color: var(--high); }

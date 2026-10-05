@@ -46,6 +46,13 @@ CREATE TABLE IF NOT EXISTS activity (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   at TEXT NOT NULL, email_id TEXT, kind TEXT NOT NULL, detail TEXT
 );
+CREATE TABLE IF NOT EXISTS tasks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email_id TEXT REFERENCES emails(id) ON DELETE CASCADE,
+  title TEXT NOT NULL, priority TEXT, exported_at TEXT NOT NULL,
+  status TEXT NOT NULL,  -- exported | failed | mock
+  detail TEXT
+);
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 """
 
@@ -54,6 +61,8 @@ DEFAULT_RULES: dict[str, Any] = {
     "draft_for_categories": ["urgent", "important", "general"],
     "draft_min_priority": "medium",
     "follow_up_days": 3,
+    # Export action items to the task webhook automatically: "off", "high" (high priority only) or "all".
+    "auto_export_tasks": "high",
 }
 
 JSON_COLUMNS = {"key_points", "action_items", "draft_sources"}
@@ -189,6 +198,21 @@ class Store:
     def activity(self, limit: int = 30) -> list[dict[str, Any]]:
         return self.query("SELECT * FROM activity ORDER BY at DESC, id DESC LIMIT ?", (limit,))
 
+    def add_tasks(self, email_id: str, titles: list[str], priority: str | None, status: str, detail: str = "") -> None:
+        with self.tx() as c:
+            for t in titles:
+                c.execute(
+                    "INSERT INTO tasks (email_id, title, priority, exported_at, status, detail) VALUES (?,?,?,?,?,?)",
+                    (email_id, t, priority, iso(now()), status, detail),
+                )
+
+    def tasks(self, email_id: str | None = None) -> list[dict[str, Any]]:
+        if email_id:
+            return self.query("SELECT * FROM tasks WHERE email_id = ? ORDER BY id", (email_id,))
+        return self.query(
+            "SELECT t.*, e.subject, e.sender FROM tasks t LEFT JOIN emails e ON e.id = t.email_id ORDER BY t.exported_at DESC, t.id"
+        )
+
     # ---- rules (editable in the UI) -----------------------------------------------------------
 
     def rules(self) -> dict[str, Any]:
@@ -203,5 +227,5 @@ class Store:
 
     def reset(self) -> None:
         with self.tx() as c:
-            for t in ("followups", "sent", "memory", "activity", "emails", "settings"):
+            for t in ("tasks", "followups", "sent", "memory", "activity", "emails", "settings"):
                 c.execute(f"DELETE FROM {t}")

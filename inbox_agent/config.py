@@ -44,6 +44,13 @@ class Settings(BaseSettings):
     # Optional Google Sheets activity log
     google_sheets_id: str = ""
 
+    # Task export: action items are POSTed as JSON to this webhook (e.g. the bundled n8n workflow).
+    task_webhook_url: str = ""
+    task_webhook_secret: str = Field(default="", description="Sent as the X-Inbox-Agent-Secret header.")
+
+    # Serve under a path prefix behind a reverse proxy, e.g. "/inbox".
+    root_path: str = ""
+
     # Web UI. Required outside demo mode: the UI shows a real inbox.
     web_password: str = ""
     owner_name: str = "Dana"

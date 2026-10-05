@@ -8,8 +8,9 @@ services:
       DEMO_MODE: "true"
       AI_PROVIDER: recorded
       DEMO_RESET_MINUTES: "60"
+      ROOT_PATH: /inbox # served at https://demos.codeitronics.com/inbox (see deploy/compose.traefik.yaml)
     ports:
-      - "127.0.0.1:8010:8000" # put Caddy/nginx in front for HTTPS
+      - "127.0.0.1:8010:8000" # a reverse proxy in front adds HTTPS
     volumes:
       - inbox-demo-data:/app/data
 

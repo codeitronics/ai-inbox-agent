@@ -21,6 +21,7 @@
     <h2>Details</h2>
     <dl class="dl">
       <dt>Replies sent</dt><dd>{{ s.sent }}</dd>
+      <dt>Tasks created</dt><dd>{{ s.tasks }}</dd>
       <dt>Past replies in memory</dt><dd>{{ s.memory }}</dd>
       {% if s.provider != 'recorded' %}<dt>Average triage time</dt><dd>{{ s.avg_ms if s.avg_ms is not none else '—' }} ms</dd>{% endif %}
       <dt>Model</dt><dd>{{ s.provider }} · {{ s.model }}</dd>

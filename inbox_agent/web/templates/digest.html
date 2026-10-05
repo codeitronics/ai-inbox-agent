@@ -9,23 +9,23 @@
   <h2>Act on first</h2>
   <ol class="digest-list">
     {% for e in d.high %}
-    <li><a href="/email/{{ e.id }}"><strong>{{ e.subject }}</strong></a> — {{ e.sender|name }}<br>{{ e.summary }}{% if e.action_items %}<br><em>{{ e.action_items[0] }}</em>{% endif %}</li>
+    <li><a href="{{ root }}/email/{{ e.id }}"><strong>{{ e.subject }}</strong></a> — {{ e.sender|name }}<br>{{ e.summary }}{% if e.action_items %}<br><em>{{ e.action_items[0] }}</em>{% endif %}</li>
     {% else %}<li class="muted">Nothing high priority.</li>{% endfor %}
   </ol>
 
   <h2>Replies waiting for you</h2>
   <ol class="digest-list">
-    {% for e in d.awaiting %}<li><a href="/email/{{ e.id }}">{{ e.subject }}</a> — {{ e.sender|name }}</li>{% else %}<li class="muted">None.</li>{% endfor %}
+    {% for e in d.awaiting %}<li><a href="{{ root }}/email/{{ e.id }}">{{ e.subject }}</a> — {{ e.sender|name }}</li>{% else %}<li class="muted">None.</li>{% endfor %}
   </ol>
 
   <h2>Follow-ups due</h2>
   <ol class="digest-list">
-    {% for f in d.followups_due %}<li><a href="/email/{{ f.email_id }}">{{ f.subject }}</a> — {{ f.sender|name }}</li>{% else %}<li class="muted">None.</li>{% endfor %}
+    {% for f in d.followups_due %}<li><a href="{{ root }}/email/{{ f.email_id }}">{{ f.subject }}</a> — {{ f.sender|name }}</li>{% else %}<li class="muted">None.</li>{% endfor %}
   </ol>
 
   <h2>For your information</h2>
   <ol class="digest-list">
-    {% for e in d.fyi %}<li><a href="/email/{{ e.id }}">{{ e.subject }}</a> — {{ e.summary }}</li>{% else %}<li class="muted">Nothing else.</li>{% endfor %}
+    {% for e in d.fyi %}<li><a href="{{ root }}/email/{{ e.id }}">{{ e.subject }}</a> — {{ e.summary }}</li>{% else %}<li class="muted">Nothing else.</li>{% endfor %}
   </ol>
 </article>
 {% endblock %}

@@ -5,7 +5,7 @@
 {% if demo %}<p class="note">Demo mode: replies are recorded here instead of being emailed.</p>{% endif %}
 <ol class="list">
   {% for s in sent %}
-  <li class="row"><a href="/email/{{ s.email_id }}">
+  <li class="row"><a href="{{ root }}/email/{{ s.email_id }}">
     <div class="row-top"><span class="who">To {{ s.recipient }}</span><span class="when">{{ s.sent_at|ago }}</span></div>
     <div class="subj">{{ s.subject }}</div>
     <p class="sum">{{ s.body[:220] }}{% if s.body|length > 220 %}…{% endif %}</p>

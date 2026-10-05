@@ -76,3 +76,42 @@ def test_retrieval_prefers_matching_reply():
         {"id": 2, "subject": "Dock schedule", "incoming": "move the dock meeting to friday", "reply": "b"},
     ]
     assert similar("our invoice shows the wrong pallets", memory)[0]["id"] == 1
+
+
+def test_high_priority_action_items_auto_export_in_demo(agent):
+    exported = {t["email_id"] for t in agent.store.tasks()}
+    assert exported == {"e101", "e102"}  # the two high-priority emails in the seeded inbox
+    assert all(t["status"] == "mock" for t in agent.store.tasks())
+    assert agent.export_tasks("e103")["ok"] and agent.store.tasks("e103")
+
+
+def test_webhook_export_posts_tasks_with_secret(agent):
+    import json
+    import threading
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    got = {}
+
+    class Hook(BaseHTTPRequestHandler):
+        def do_POST(self):
+            got["secret"] = self.headers.get("X-Inbox-Agent-Secret")
+            got["body"] = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+            self.send_response(200 if got["secret"] == "s3cret" else 401)
+            self.end_headers()
+            self.wfile.write(b'{"ok":true}')
+
+        def log_message(self, *a):
+            pass
+
+    srv = HTTPServer(("127.0.0.1", 0), Hook)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    agent.settings.demo_mode = False
+    agent.settings.task_webhook_url = f"http://127.0.0.1:{srv.server_port}/hook"
+    agent.settings.task_webhook_secret = "wrong"
+    assert not agent.export_tasks("e108")["ok"]
+    assert agent.store.tasks("e108")[0]["status"] == "failed"
+    agent.settings.task_webhook_secret = "s3cret"
+    assert agent.export_tasks("e108")["ok"]  # retry replaces the failed rows
+    srv.shutdown()
+    assert [t["status"] for t in agent.store.tasks("e108")] == ["exported", "exported"]
+    assert got["body"]["email"]["id"] == "e108" and len(got["body"]["tasks"]) == 2

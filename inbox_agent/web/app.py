@@ -23,6 +23,7 @@ from ..pipeline import InboxAgent
 
 HERE = Path(__file__).parent
 settings = get_settings()
+ROOT = settings.root_path.rstrip("/")
 if not settings.demo_mode and not settings.web_password:
     raise SystemExit("WEB_PASSWORD must be set when DEMO_MODE=false: the UI shows your real inbox.")
 
@@ -48,7 +49,7 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title="AI Inbox Agent", docs_url=None, redoc_url=None, lifespan=lifespan)
+app = FastAPI(title="AI Inbox Agent", docs_url=None, redoc_url=None, lifespan=lifespan, root_path=ROOT)
 app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
 templates = Jinja2Templates(directory=HERE / "templates")
 basic = HTTPBasic(auto_error=False)
@@ -97,12 +98,15 @@ def page(request: Request, template: str, **ctx) -> HTMLResponse:
     return templates.TemplateResponse(
         request,
         template,
-        {"demo": settings.demo_mode, "provider": agent.llm.provider, "model": agent.llm.model, "counts": counts, "path": request.url.path, **ctx},
+        {
+            "demo": settings.demo_mode, "provider": agent.llm.provider, "model": agent.llm.model, "counts": counts,
+            "root": ROOT, "path": request.url.path.removeprefix(ROOT) or "/", **ctx,
+        },
     )
 
 
 def back(url: str) -> RedirectResponse:
-    return RedirectResponse(url, status_code=303)
+    return RedirectResponse(ROOT + url, status_code=303)
 
 
 @app.get("/healthz")
@@ -138,7 +142,18 @@ def email(request: Request, email_id: str):
     examples = [sources[s["id"]] | {"score": s["score"]} for s in (e.get("draft_sources") or []) if s["id"] in sources]
     followup = next((f for f in agent.store.followups() if f["email_id"] == email_id), None)
     sent = next((s for s in agent.store.sent() if s["email_id"] == email_id), None)
-    return page(request, "email.html", e=e, examples=examples, followup=followup, sent=sent)
+    return page(request, "email.html", e=e, examples=examples, followup=followup, sent=sent, tasks=agent.store.tasks(email_id), webhook=bool(settings.task_webhook_url))
+
+
+@app.post("/email/{email_id}/tasks", dependencies=[Guard])
+def export_tasks(email_id: str):
+    agent.export_tasks(email_id)
+    return back(f"/email/{email_id}")
+
+
+@app.get("/tasks", response_class=HTMLResponse, dependencies=[Guard])
+def tasks(request: Request):
+    return page(request, "tasks.html", tasks=agent.store.tasks(), webhook=bool(settings.task_webhook_url))
 
 
 @app.post("/email/{email_id}/triage", dependencies=[Guard])
@@ -214,6 +229,7 @@ async def save_settings(request: Request):
             "draft_for_categories": [c for c in form.getlist("draft_for_categories") if c in CATEGORIES],
             "draft_min_priority": form.get("draft_min_priority") if form.get("draft_min_priority") in ("high", "medium", "low") else "medium",
             "follow_up_days": max(1, min(30, int(form.get("follow_up_days") or 3))),
+            "auto_export_tasks": form.get("auto_export_tasks") if form.get("auto_export_tasks") in ("off", "high", "all") else "high",
         }
     )
     return back("/settings?saved=1")

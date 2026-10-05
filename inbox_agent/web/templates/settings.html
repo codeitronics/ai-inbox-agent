@@ -4,7 +4,7 @@
 <div class="head"><div><p class="kicker">Settings</p><h1>Rules</h1></div></div>
 {% if saved %}<p class="note ok">Saved.</p>{% endif %}
 <div class="split">
-  <form method="post" action="/settings" class="block form">
+  <form method="post" action="{{ root }}/settings" class="block form">
     <label class="check"><input type="checkbox" name="approval_required" {{ 'checked' if rules.approval_required }}> Require my approval before any reply is sent</label>
     <p class="muted small">Turning this off sends drafts automatically. We recommend leaving it on.</p>
 
@@ -24,6 +24,11 @@
     <label>Follow up on medium-priority email after (days)
       <input type="number" name="follow_up_days" min="1" max="30" value="{{ rules.follow_up_days }}">
     </label>
+    <label>Send action items to your task list automatically
+      <select name="auto_export_tasks">
+        {% for k, label in [('off', 'Never (I click “Send to tasks”)'), ('high', 'For high-priority email'), ('all', 'For every email with action items')] %}<option value="{{ k }}" {{ 'selected' if rules.auto_export_tasks == k }}>{{ label }}</option>{% endfor %}
+      </select>
+    </label>
     <div><button class="btn btn-primary">Save rules</button></div>
   </form>
 
@@ -33,6 +38,7 @@
       <dt>Mode</dt><dd>{{ 'Demo (fictional mailbox)' if demo else 'Gmail' }}</dd>
       <dt>AI provider</dt><dd>{{ provider }}</dd>
       <dt>Model</dt><dd>{{ model }}</dd>
+      <dt>Task webhook</dt><dd>{{ 'Configured' if settings.task_webhook_url else ('Demo (mock export)' if demo else 'Not set') }}</dd>
       <dt>Signature</dt><dd class="pre">{{ settings.owner_signature }}</dd>
     </dl>
     <p class="muted small">Provider, model, mailbox and signature come from environment variables. See the README.</p>

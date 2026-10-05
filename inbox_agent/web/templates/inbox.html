@@ -7,7 +7,7 @@
     <p class="kicker">Inbox</p>
     <h1>{% if counts.awaiting %}{{ counts.awaiting }} repl{{ 'y' if counts.awaiting == 1 else 'ies' }} ready for your review{% else %}You're all caught up{% endif %}</h1>
   </div>
-  <form method="post" action="/triage" class="triage">
+  <form method="post" action="{{ root }}/triage" class="triage">
     <button class="btn btn-primary">{% if counts.new %}Triage {{ counts.new }} new email{{ 's' if counts.new != 1 }}{% else %}Check for new mail{% endif %}</button>
     <span class="htmx-indicator">Reading…</span>
   </form>
@@ -15,7 +15,7 @@
 
 <nav class="tabs" aria-label="Views">
   {% for k, label in [('open','Needs attention'),('approval','Reply ready'),('filtered','Filtered'),('done','Done'),('all','All')] %}
-  <a href="/?view={{ k }}" class="{{ 'on' if view == k }}">{{ label }}</a>
+  <a href="{{ root }}/?view={{ k }}" class="{{ 'on' if view == k }}">{{ label }}</a>
   {% endfor %}
 </nav>
 
@@ -23,7 +23,7 @@
   <ol class="list">
     {% for e in emails %}
     <li class="row {{ 'row-new' if e.status == 'new' }}">
-      <a href="/email/{{ e.id }}">
+      <a href="{{ root }}/email/{{ e.id }}">
         <div class="row-top">
           <span class="who">{{ e.sender|name }}</span>
           <span class="when">{{ e.received_at|ago }}</span>

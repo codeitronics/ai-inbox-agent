@@ -21,6 +21,7 @@ uv run inbox-agent serve        # open http://127.0.0.1:8000
 | **Draft** | For emails your rules say need an answer, it finds your most similar past replies and drafts a response in the same tone, citing which ones it used. |
 | **Approve** | You approve and send, edit the text, ask for a rewrite in plain words ("shorter, and confirm we'll cover the cost"), or skip. With approval on (the default), nothing is sent without you. |
 | **Remember** | Every approved reply becomes an example for future drafts, so drafts get closer to how you write. |
+| **Tasks** | Action items go to your task app through a webhook. A ready-made n8n workflow creates them in Google Tasks (or Notion or Todoist). High-priority email is exported automatically; everything else takes one click. |
 | **Follow up** | High-priority mail gets a next-day follow-up and medium-priority mail one after a few days (configurable), with Done and Snooze. |
 | **Digest** | A morning page with what to act on first, replies waiting, follow-ups due, and what was filtered out. |
 
@@ -31,7 +32,7 @@ uv run inbox-agent serve        # open http://127.0.0.1:8000
   </tr>
   <tr>
     <td><img src="docs/screenshots/03-phishing-flagged.png" alt="A phishing email flagged and not answered"></td>
-    <td><img src="docs/screenshots/06-stats.png" alt="Stats"></td>
+    <td><img src="docs/screenshots/10-tasks.png" alt="Action items sent to the task list"></td>
   </tr>
 </table>
 
@@ -64,6 +65,24 @@ Set one key and leave `AI_PROVIDER=auto`, or pick explicitly:
 | DeepSeek | `DEEPSEEK_API_KEY` | `deepseek-chat` |
 | Recorded | none | replays `inbox_agent/demo/recordings.json` |
 
+### Send action items to your task app
+
+1. In n8n, import [`integrations/n8n/inbox-agent-tasks.json`](integrations/n8n/inbox-agent-tasks.json), create the Header Auth credential described in its note, connect Google Tasks, and activate it.
+2. Set `TASK_WEBHOOK_URL` to the workflow's production URL and `TASK_WEBHOOK_SECRET` to the same secret.
+
+The agent POSTs one JSON body per email:
+
+```json
+{
+  "source": "ai-inbox-agent",
+  "email": { "id": "…", "subject": "…", "from": "…", "received_at": "…" },
+  "priority": "high", "category": "urgent", "summary": "…",
+  "tasks": [{ "title": "Decide replacement trailer vs cross-dock before 3pm", "notes": "From: … Subject: …" }]
+}
+```
+
+Any endpoint that accepts this works: Zapier, Make or your own API.
+
 ### Rules
 
 Edit these on the Settings page: whether approval is required, which categories get drafts, the minimum priority for a draft, and the follow-up delay.
@@ -84,8 +103,10 @@ uv run pytest                                            # tests
 `compose.yaml` runs the demo for anyone to try: recorded answers, a reset every hour, nothing sent. Keep API keys out of it, since anyone with the URL could spend them through *Rewrite*.
 
 ```bash
-docker compose up -d --build    # listens on 127.0.0.1:8010; put Caddy or nginx in front for HTTPS
+docker compose up -d --build    # listens on 127.0.0.1:8010
 ```
+
+It's set up to be served at a path, `https://demos.codeitronics.com/inbox`, with `ROOT_PATH=/inbox`. Behind Traefik, add [`deploy/compose.traefik.yaml`](deploy/compose.traefik.yaml) (`docker compose -f compose.yaml -f deploy/compose.traefik.yaml up -d --build`); behind any other proxy, strip the `/inbox` prefix and forward to port 8010.
 
 ## How it's built
 
@@ -101,7 +122,12 @@ inbox_agent/
   store.py       SQLite
   web/           FastAPI app, templates, CSS
   demo/          fictional mailbox, recorded answers, seeder
+integrations/n8n/  workflow that turns exported action items into Google Tasks
 ```
+
+## License
+
+MIT. See [LICENSE](LICENSE).
 
 ---
 

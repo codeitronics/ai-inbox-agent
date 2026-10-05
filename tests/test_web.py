@@ -9,7 +9,7 @@ from inbox_agent.web.app import app  # noqa: E402
 
 def test_pages_render_and_approve_flow():
     with TestClient(app) as c:
-        for path in ["/", "/?view=filtered", "/email/e101", "/followups", "/digest", "/sent", "/stats", "/settings", "/healthz"]:
+        for path in ["/", "/?view=filtered", "/email/e101", "/tasks", "/followups", "/digest", "/sent", "/stats", "/settings", "/healthz"]:
             assert c.get(path).status_code == 200, path
         assert "Reply ready" in c.get("/").text
         r = c.post("/email/e104/approve", data={"subject": "Re: dock", "body": "Friday works."}, follow_redirects=False)

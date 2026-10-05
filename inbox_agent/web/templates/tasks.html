@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Tasks{% endblock %}
+{% block main %}
+<div class="head"><div><p class="kicker">Tasks</p><h1>{{ tasks|rejectattr('status', 'equalto', 'failed')|list|length }} action items sent to your task list</h1></div></div>
+<p class="note">
+  {% if demo %}Demo mode: tasks are recorded here. With <code>TASK_WEBHOOK_URL</code> set, each email's action items are posted to your n8n workflow, which creates them in Google Tasks, Notion or Todoist.
+  {% elif webhook %}Action items are posted to your task webhook.{% else %}Set <code>TASK_WEBHOOK_URL</code> to send action items to your task app (see integrations/n8n).{% endif %}
+</p>
+<table class="table">
+  {% for t in tasks %}
+  <tr>
+    <td><span class="pri pri-{{ t.priority }}">{{ t.priority }}</span></td>
+    <td><strong>{{ t.title }}</strong><br><span class="muted">from <a href="{{ root }}/email/{{ t.email_id }}">{{ t.subject }}</a> · {{ t.sender|name }}</span></td>
+    <td class="nowrap">{{ t.exported_at|ago }}</td>
+    <td class="nowrap {{ 'task-fail' if t.status == 'failed' else 'task-done' }}">{{ {'mock': '✓ demo', 'exported': '✓ created', 'failed': 'failed'}[t.status] }}</td>
+  </tr>
+  {% else %}<tr><td class="muted">Nothing exported yet.</td></tr>{% endfor %}
+</table>
+{% endblock %}

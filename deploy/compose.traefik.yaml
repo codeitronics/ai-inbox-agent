@@ -1,0 +1,25 @@
+# Serve the demo at https://demos.codeitronics.com/inbox through the Traefik that already fronts n8n.
+#
+#   docker compose -f compose.yaml -f deploy/compose.traefik.yaml up -d --build
+#
+# Before the first run, confirm three values against n8n's labels on the VPS:
+#   docker inspect n8n-n8n-1 --format '{{json .Config.Labels}}' | tr ',' '\n' | grep -E 'entrypoints|certresolver'
+#   docker inspect n8n-n8n-1 --format '{{range $k, $v := .NetworkSettings.Networks}}{{$k}} {{end}}'
+# and change "websecure", "mytlschallenge" and "n8n_default" below if yours differ.
+services:
+  inbox-demo:
+    ports: !reset []
+    networks: [proxy]
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.inbox-demo.rule: Host(`demos.codeitronics.com`) && PathPrefix(`/inbox`)
+      traefik.http.routers.inbox-demo.entrypoints: websecure
+      traefik.http.routers.inbox-demo.tls.certresolver: mytlschallenge
+      traefik.http.routers.inbox-demo.middlewares: inbox-demo-strip
+      traefik.http.middlewares.inbox-demo-strip.stripprefix.prefixes: /inbox
+      traefik.http.services.inbox-demo.loadbalancer.server.port: "8000"
+
+networks:
+  proxy:
+    external: true
+    name: n8n_default

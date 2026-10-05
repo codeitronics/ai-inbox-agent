@@ -1,0 +1,123 @@
+{
+  "name": "AI Inbox Agent → Google Tasks",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## AI Inbox Agent → tasks\n\n1. Open **Inbox Agent webhook** and create a *Header Auth* credential: name `X-Inbox-Agent-Secret`, value = your `TASK_WEBHOOK_SECRET`.\n2. Connect your Google account in **Create Google Task** and pick a task list.\n3. Activate the workflow and copy the **Production URL** into the agent's `TASK_WEBHOOK_URL`.\n\nPrefer Notion or Todoist? Replace the last node with the Notion *Create database page* or Todoist *Create task* node; the fields are `title`, `notes` and the webhook's `body.priority`.",
+        "height": 340,
+        "width": 420
+      },
+      "id": "5b0b8b1e-6d0a-4a4e-9a5e-0d2f6c1a0001",
+      "name": "Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "inbox-agent-tasks",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "5b0b8b1e-6d0a-4a4e-9a5e-0d2f6c1a0002",
+      "name": "Inbox Agent webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        160
+      ],
+      "webhookId": "2f1d6e1c-1d8e-4c55-9d0e-inboxagent01"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.tasks",
+        "options": {}
+      },
+      "id": "5b0b8b1e-6d0a-4a4e-9a5e-0d2f6c1a0003",
+      "name": "One item per task",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        240,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "task": "@default",
+        "title": "={{ ($('Inbox Agent webhook').first().json.body.priority === 'high' ? '🔴 ' : '') + $json.title }}",
+        "additionalFields": {
+          "notes": "={{ $json.notes }}"
+        }
+      },
+      "id": "5b0b8b1e-6d0a-4a4e-9a5e-0d2f6c1a0004",
+      "name": "Create Google Task",
+      "type": "n8n-nodes-base.googleTasks",
+      "typeVersion": 1,
+      "position": [
+        480,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, created: $input.all().length } }}",
+        "options": {}
+      },
+      "id": "5b0b8b1e-6d0a-4a4e-9a5e-0d2f6c1a0005",
+      "name": "Reply to agent",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        160
+      ]
+    }
+  ],
+  "connections": {
+    "Inbox Agent webhook": {
+      "main": [
+        [
+          {
+            "node": "One item per task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One item per task": {
+      "main": [
+        [
+          {
+            "node": "Create Google Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Google Task": {
+      "main": [
+        [
+          {
+            "node": "Reply to agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

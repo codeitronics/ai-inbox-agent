@@ -2,7 +2,7 @@
 {% from "_macros.html" import tags, status %}
 {% block title %}{{ e.subject }}{% endblock %}
 {% block main %}
-<p class="crumb"><a href="/">← Inbox</a></p>
+<p class="crumb"><a href="{{ root }}/">← Inbox</a></p>
 <div class="email-grid">
   <article class="mail">
     <div class="meta">{{ tags(e) }} {{ status(e) }}</div>
@@ -11,7 +11,7 @@
     <div class="body">{{ e.body }}</div>
 
     {% if e.status == 'new' %}
-    <form method="post" action="/email/{{ e.id }}/triage" class="triage">
+    <form method="post" action="{{ root }}/email/{{ e.id }}/triage" class="triage">
       <button class="btn btn-primary">Triage this email</button><span class="htmx-indicator">Reading…</span>
     </form>
     {% endif %}
@@ -27,15 +27,15 @@
         <div class="body">{{ e.draft_body }}</div>
         {% if sent %}<p class="note">{{ 'Recorded in the demo Sent box (not actually emailed)' if sent.mock else 'Sent' }} · {{ sent.sent_at|ago }}</p>{% endif %}
       {% else %}
-      <form method="post" action="/email/{{ e.id }}/approve" class="draft-form">
+      <form method="post" action="{{ root }}/email/{{ e.id }}/approve" class="draft-form">
         <label>Subject <input name="subject" value="{{ e.draft_subject }}"></label>
         <label>Reply <textarea name="body" rows="12">{{ e.draft_body }}</textarea></label>
         <div class="actions">
           <button class="btn btn-primary">Approve &amp; send</button>
-          <button class="btn" formaction="/email/{{ e.id }}/skip">Skip</button>
+          <button class="btn" formaction="{{ root }}/email/{{ e.id }}/skip">Skip</button>
         </div>
       </form>
-      <form method="post" action="/email/{{ e.id }}/refine" class="refine">
+      <form method="post" action="{{ root }}/email/{{ e.id }}/refine" class="refine">
         <input type="hidden" name="body" value="{{ e.draft_body }}">
         <label>Ask for changes <input name="feedback" placeholder="e.g. shorter, and confirm we'll cover the cost"></label>
         <button class="btn">Rewrite</button><span class="htmx-indicator">Rewriting…</span>
@@ -44,7 +44,7 @@
       {% endif %}
     </section>
     {% elif e.status == 'fyi' %}
-    <p class="note">No reply drafted: {{ 'filtered as ' ~ e.category if e.category in ('promotional','spam','newsletter') else 'priority or category is outside your drafting rules' }}. <a href="/settings">Change rules</a></p>
+    <p class="note">No reply drafted: {{ 'filtered as ' ~ e.category if e.category in ('promotional','spam','newsletter') else 'priority or category is outside your drafting rules' }}. <a href="{{ root }}/settings">Change rules</a></p>
     {% endif %}
   </article>
 
@@ -55,6 +55,16 @@
     {% if e.action_items %}
     <p class="kicker">Action items</p>
     <ul class="ticks">{% for a in e.action_items %}<li>{{ a }}</li>{% endfor %}</ul>
+    {% set live_tasks = tasks | rejectattr('status', 'equalto', 'failed') | list %}
+    {% if live_tasks %}
+    <p class="small ok-text">✓ Sent to your task list{{ ' (demo)' if live_tasks[0].status == 'mock' }} {{ live_tasks[0].exported_at|ago }} · <a href="{{ root }}/tasks">tasks</a></p>
+    {% elif e.category not in ('spam', 'promotional', 'newsletter') %}
+    <form method="post" action="{{ root }}/email/{{ e.id }}/tasks" class="tasks-form">
+      <button class="btn btn-small"{{ ' disabled' if not (demo or webhook) }}>Send {{ e.action_items|length }} to tasks</button>
+      {% if tasks %}<span class="small warn-text">Last export failed; try again.</span>{% endif %}
+      {% if not (demo or webhook) %}<span class="small muted">Set TASK_WEBHOOK_URL to enable.</span>{% endif %}
+    </form>
+    {% endif %}
     {% endif %}
     {% if e.key_points %}
     <p class="kicker">Key points</p>
@@ -68,7 +78,7 @@
     {% endif %}
     {% if followup %}
     <p class="kicker">Follow-up</p>
-    <p>{% if followup.status == 'done' %}Done{% else %}Due {{ followup.due_at|ago }}{% endif %} · <a href="/followups">all follow-ups</a></p>
+    <p>{% if followup.status == 'done' %}Done{% else %}Due {{ followup.due_at|ago }}{% endif %} · <a href="{{ root }}/followups">all follow-ups</a></p>
     {% endif %}
     {% if provider != 'recorded' %}<p class="muted small">Triaged in {{ e.processing_ms }} ms by {{ model }}</p>{% endif %}
     {% else %}

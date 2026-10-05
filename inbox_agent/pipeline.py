@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import json
 import re
 import time
+import urllib.request
 from collections import Counter
 from datetime import datetime, timezone
 from typing import Any
@@ -92,6 +94,10 @@ class InboxAgent:
         if fields["status"] == "awaiting_approval" and not rules["approval_required"]:
             self.approve(email_id)
 
+        auto = rules["auto_export_tasks"]
+        if s["action_items"] and c["category"] not in ("spam", "promotional", "newsletter") and (auto == "all" or (auto == "high" and c["priority"] == "high")):
+            self.export_tasks(email_id)
+
         self.sheets.append(self.store.email(email_id))
         return self.store.email(email_id) or {}
 
@@ -131,6 +137,43 @@ class InboxAgent:
     def skip(self, email_id: str) -> None:
         self.store.update_email(email_id, status="skipped", decided_at=iso(now()))
         self.store.log("skipped", email_id)
+
+    def export_tasks(self, email_id: str) -> dict[str, Any]:
+        """POST the email's action items to the task webhook (or record a mock export in demo mode)."""
+        e = self.store.email(email_id)
+        if not e or not e["action_items"]:
+            return {"ok": False, "reason": "No action items to export."}
+        if any(t["status"] != "failed" for t in self.store.tasks(email_id)):
+            return {"ok": True, "reason": "Already exported."}
+        with self.store.tx() as c:  # retrying after a failure replaces the failed rows
+            c.execute("DELETE FROM tasks WHERE email_id = ? AND status = 'failed'", (email_id,))
+        payload = {
+            "source": "ai-inbox-agent",
+            "email": {"id": e["id"], "subject": e["subject"], "from": e["sender"], "received_at": e["received_at"]},
+            "priority": e["priority"],
+            "category": e["category"],
+            "summary": e["summary"],
+            "tasks": [{"title": a, "notes": f"From: {e['sender']}\nSubject: {e['subject']}\n\n{e['summary']}"} for a in e["action_items"]],
+        }
+        url = self.settings.task_webhook_url
+        if self.settings.demo_mode or not url:
+            if not self.settings.demo_mode:
+                return {"ok": False, "reason": "Set TASK_WEBHOOK_URL to export tasks."}
+            self.store.add_tasks(email_id, e["action_items"], e["priority"], "mock", json.dumps(payload))
+            self.store.log("tasks_exported", email_id, f"{len(e['action_items'])} task(s) (demo — not actually sent)")
+            return {"ok": True, "mock": True}
+        req = urllib.request.Request(url, data=json.dumps(payload).encode(), method="POST", headers={"Content-Type": "application/json"})
+        if self.settings.task_webhook_secret:
+            req.add_header("X-Inbox-Agent-Secret", self.settings.task_webhook_secret)
+        try:
+            with urllib.request.urlopen(req, timeout=15) as res:
+                ok = 200 <= res.status < 300
+                detail = res.read(500).decode("utf-8", "replace")
+        except Exception as err:  # noqa: BLE001
+            ok, detail = False, str(err)[:300]
+        self.store.add_tasks(email_id, e["action_items"], e["priority"], "exported" if ok else "failed", detail)
+        self.store.log("tasks_exported" if ok else "error", email_id, f"{len(e['action_items'])} task(s)" if ok else f"Task export failed: {detail}")
+        return {"ok": ok, "reason": None if ok else detail}
 
     def complete_followup(self, email_id: str) -> None:
         self.store.complete_followup(email_id)
@@ -181,6 +224,7 @@ class InboxAgent:
             "avg_ms": round(sum(times) / len(times)) if times else None,
             "minutes_saved": round(minutes),
             "memory": len(self.store.memory()),
+            "tasks": len([t for t in self.store.tasks() if t["status"] != "failed"]),
             "provider": self.llm.provider,
             "model": self.llm.model,
         }
