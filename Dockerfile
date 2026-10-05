@@ -12,7 +12,8 @@ RUN uv sync --frozen --no-dev
 RUN useradd --create-home app && mkdir -p /app/data /app/logs && chown -R app /app/data /app/logs
 USER app
 
-ENV DEMO_MODE=true DATABASE_PATH=/app/data/inbox.db
+# Run the installed environment directly: `uv run` would try to re-sync it at start-up as the non-root user.
+ENV DEMO_MODE=true DATABASE_PATH=/app/data/inbox.db PATH="/app/.venv/bin:$PATH"
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz')"
-CMD ["uv", "run", "--no-dev", "inbox-agent", "serve", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["inbox-agent", "serve", "--host", "0.0.0.0", "--port", "8000"]
